@@ -26,26 +26,38 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.linkd.internal;
+package org.opennms.netmgt.topologies.service.api;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
-import org.junit.Test;
+public final class CompositeKey {
 
-public class CompositeKeyTest {
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldRejectNoKeysInvocation() {
-        new CompositeKey();
+    private List<Object> keys;
+
+    public CompositeKey(Object...keys){
+        if(keys.length<1){
+            throw new IllegalArgumentException("Need at least one key but was supplied with none");
+        }
+        this.keys = Arrays.asList(keys);
     }
 
-    @Test
-    public void equalsAndHashCodeShouldWork() {
-        CompositeKey same1 = new CompositeKey("aa", 33);
-        CompositeKey same2 = new CompositeKey("aa", 33);
-        CompositeKey different = new CompositeKey("aa", 31);
-        assertEquals(same1, same2);
-        assertEquals(same1.hashCode(), same2.hashCode());
-        assertNotEquals(same1, different);
+    @Override
+    public String toString() {
+        return this.keys.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CompositeKey that = (CompositeKey) o;
+        return Objects.equals(keys, that.keys);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(keys);
     }
 }

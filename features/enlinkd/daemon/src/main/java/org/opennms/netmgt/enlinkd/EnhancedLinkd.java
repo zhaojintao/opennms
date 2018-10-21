@@ -66,8 +66,8 @@ import org.springframework.util.Assert;
  */
 public class EnhancedLinkd extends AbstractServiceDaemon {
     
-    public static DiscoveryCdpTopology createAndRegister(EnhancedLinkd linkd) throws OnmsTopologyException {
-        DiscoveryCdpTopology discoveryCdpTopology = new DiscoveryCdpTopology(
+    public static CdpOnmsTopologyUpdater createAndRegister(EnhancedLinkd linkd) throws OnmsTopologyException {
+        CdpOnmsTopologyUpdater discoveryCdpTopology = new CdpOnmsTopologyUpdater(
                                                                              linkd.getEventForwarder(),
                                                                              linkd.getTopologyDao(),
                                                                              linkd.getCdpTopologyService(),
@@ -122,7 +122,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
     @Autowired
     private LocationAwareSnmpClient m_locationAwareSnmpClient;
 
-    private DiscoveryCdpTopology m_discoveryCdpTopology;
+    private CdpOnmsTopologyUpdater m_discoveryCdpTopology;
     private DiscoveryBridgeDomains m_discoveryBridgeDomains;
 
     /**
@@ -397,7 +397,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         return m_discoveryBridgeDomains;
     }
     
-    public DiscoveryCdpTopology getDiscoveryCdpTopology() {
+    public CdpOnmsTopologyUpdater getDiscoveryCdpTopology() {
         return m_discoveryCdpTopology;
     }
 

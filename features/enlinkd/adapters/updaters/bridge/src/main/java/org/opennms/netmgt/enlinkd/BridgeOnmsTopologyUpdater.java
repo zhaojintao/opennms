@@ -52,15 +52,15 @@ import org.opennms.netmgt.topologies.service.api.Topology.ProtocolSupported;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DiscoveryCdpTopology extends Discovery implements OnmsTopologyUpdater {
+public class BridgeOnmsTopologyUpdater extends Discovery implements OnmsTopologyUpdater {
 
-    private static final Logger LOG = LoggerFactory.getLogger(DiscoveryCdpTopology.class);
+    private static final Logger LOG = LoggerFactory.getLogger(BridgeOnmsTopologyUpdater.class);
 
     protected final TopologyDao m_topologyDao;
     protected final CdpTopologyService m_cdpTopologyService;
     protected final NodeTopologyService m_nodeTopologyService;
 
-    public DiscoveryCdpTopology(EventForwarder eventforwarder,
+    public BridgeOnmsTopologyUpdater(EventForwarder eventforwarder,
             TopologyDao topologyDao, CdpTopologyService cdpTopologyService, NodeTopologyService nodeTopologyService,
             long interval, long initialsleeptime) {
         super(eventforwarder, interval, initialsleeptime);
@@ -92,7 +92,7 @@ public class DiscoveryCdpTopology extends Discovery implements OnmsTopologyUpdat
 
     @Override
     public String getName() {
-        return "DiscoveryCdpTopology";
+        return "CdpTopologyUpdaters";
     }
 
     @Override

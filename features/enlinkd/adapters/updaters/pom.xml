@@ -11,5 +11,9 @@
   <name>OpenNMS :: Features :: Enlinkd :: Adapters :: Updaters</name>
   <modules>
     <module>cdp</module>
+    <module>lldp</module>
+    <module>ospf</module>
+    <module>isis</module>
+    <module>bridge</module>
   </modules>
 </project>

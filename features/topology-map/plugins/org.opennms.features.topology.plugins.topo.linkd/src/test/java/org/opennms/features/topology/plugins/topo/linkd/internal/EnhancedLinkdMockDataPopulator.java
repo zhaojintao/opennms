@@ -68,6 +68,10 @@ import org.opennms.netmgt.enlinkd.persistence.api.LldpLinkDao;
 import org.opennms.netmgt.enlinkd.persistence.api.OspfLinkDao;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.BroadcastDomain;
+import org.opennms.netmgt.enlinkd.service.api.CdpTopologyService;
+import org.opennms.netmgt.enlinkd.service.api.IsisTopologyService;
+import org.opennms.netmgt.enlinkd.service.api.LldpTopologyService;
+import org.opennms.netmgt.enlinkd.service.api.OspfTopologyService;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -81,25 +85,16 @@ public class EnhancedLinkdMockDataPopulator {
     private BridgeTopologyService m_bridgeTopologyService;
 
     @Autowired
-    private CdpLinkDao m_cdpLinkDao;
+    private CdpTopologyService m_cdpTopologyService;
 
     @Autowired
-    private CdpElementDao m_cdpElementDao;
+    private LldpTopologyService m_lldpTopologyService;
 
     @Autowired
-    private IsIsLinkDao m_isisLinkDao;
+    private IsisTopologyService m_isisTopologyService;
 
     @Autowired
-    private IsIsElementDao m_isisElementDao;
-
-    @Autowired
-    private LldpLinkDao m_lldpLinkDao;
-
-    @Autowired
-    private LldpElementDao m_lldpElementDao;
-
-    @Autowired
-    private OspfLinkDao m_ospfLinkDao;
+    private OspfTopologyService m_ospfTopologyService;
 
     @Autowired
     private NodeDao m_nodeDao;
@@ -112,6 +107,23 @@ public class EnhancedLinkdMockDataPopulator {
 
     @Autowired
     private IpNetToMediaDao m_ipNetToMediaDao;
+
+    @Autowired
+    private CdpElementDao m_cdpElementDao;
+    @Autowired
+    private CdpLinkDao m_cdpLinkDao;
+    
+    @Autowired
+    private IsIsElementDao m_isisElementDao;
+    @Autowired
+    private IsIsLinkDao m_isisLinkDao;
+    
+    @Autowired
+    private LldpElementDao m_lldpElementDao;
+    @Autowired
+    private LldpLinkDao m_lldpLinkDao;
+    @Autowired
+    private OspfLinkDao m_ospfLinkDao;
 
     @Autowired
     private OperationContext m_operationContext;
@@ -559,14 +571,6 @@ public class EnhancedLinkdMockDataPopulator {
         return m_ospfLinks;
     }
 
-    public LldpLinkDao getLldpLinkDao(){
-        return m_lldpLinkDao;
-    }
-
-    public void setLldpLinkDao(final LldpLinkDao lldpLinkDao){
-        m_lldpLinkDao = lldpLinkDao;
-    }
-
     public NodeDao getNodeDao() {
         return m_nodeDao;
     }
@@ -717,20 +721,54 @@ public class EnhancedLinkdMockDataPopulator {
         m_ipInterfaceDao = ipInterfaceDao;
     }
 
-    public void setOspfLinkDao(OspfLinkDao ospfLinkDao) {
-        m_ospfLinkDao = ospfLinkDao;
+    public BridgeTopologyService getBridgeTopologyService() {
+        return m_bridgeTopologyService;
     }
 
-    public OspfLinkDao getOspfLinkDao() {
-        return m_ospfLinkDao;
-    }
-    
-    public LldpElementDao getLldpElementDao() {
-        return m_lldpElementDao;
+    public void setBridgeTopologyService(
+            BridgeTopologyService bridgeTopologyService) {
+        m_bridgeTopologyService = bridgeTopologyService;
     }
 
-    public void setLldpElementDao(LldpElementDao lldpElementDao) {
-        m_lldpElementDao = lldpElementDao;
+    public CdpTopologyService getCdpTopologyService() {
+        return m_cdpTopologyService;
     }
+
+    public void setCdpTopologyService(CdpTopologyService cdpTopologyService) {
+        m_cdpTopologyService = cdpTopologyService;
+    }
+
+    public LldpTopologyService getLldpTopologyService() {
+        return m_lldpTopologyService;
+    }
+
+    public void setLldpTopologyService(LldpTopologyService lldpTopologyService) {
+        m_lldpTopologyService = lldpTopologyService;
+    }
+
+    public IsisTopologyService getIsisTopologyService() {
+        return m_isisTopologyService;
+    }
+
+    public void setIsisTopologyService(IsisTopologyService isisTopologyService) {
+        m_isisTopologyService = isisTopologyService;
+    }
+
+    public OspfTopologyService getOspfTopologyService() {
+        return m_ospfTopologyService;
+    }
+
+    public void setOspfTopologyService(OspfTopologyService ospfTopologyService) {
+        m_ospfTopologyService = ospfTopologyService;
+    }
+
+    public IpNetToMediaDao getIpNetToMediaDao() {
+        return m_ipNetToMediaDao;
+    }
+
+    public void setIpNetToMediaDao(IpNetToMediaDao ipNetToMediaDao) {
+        m_ipNetToMediaDao = ipNetToMediaDao;
+    }
+
 
 }

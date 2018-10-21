@@ -764,7 +764,7 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
         assertEquals(1, m_topologyDao.getSupportedProtocols().size());
         assertEquals(ProtocolSupported.CDP.name(), m_topologyDao.getSupportedProtocols().iterator().next());
 
-        DiscoveryCdpTopology cdptopology = m_linkd.getDiscoveryCdpTopology();
+        CdpOnmsTopologyUpdater cdptopology = m_linkd.getDiscoveryCdpTopology();
         assertNotNull(cdptopology);
         OnmsTopology topology = cdptopology.getTopology();
         assertEquals(2, topology.getVertices().size());
