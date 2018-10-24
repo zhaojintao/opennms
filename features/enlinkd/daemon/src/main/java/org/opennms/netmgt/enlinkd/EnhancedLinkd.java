@@ -50,6 +50,7 @@ import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.scheduler.LegacyScheduler;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyException;
+import org.opennms.netmgt.topologies.service.api.Topology.ProtocolSupported;
 import org.opennms.netmgt.topologies.service.api.TopologyDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,17 +67,60 @@ import org.springframework.util.Assert;
  */
 public class EnhancedLinkd extends AbstractServiceDaemon {
     
-    public static CdpOnmsTopologyUpdater createAndRegister(EnhancedLinkd linkd) throws OnmsTopologyException {
-        CdpOnmsTopologyUpdater discoveryCdpTopology = new CdpOnmsTopologyUpdater(
-                                                                             linkd.getEventForwarder(),
-                                                                             linkd.getTopologyDao(),
-                                                                             linkd.getCdpTopologyService(),
-                                                                             linkd.getQueryManager(),
-                                                                             linkd.getBridgeTopologyInterval(),
-                                                                             linkd.getInitialSleepTime()
-                                                                                     + linkd.getBridgeTopologyInterval());
-        linkd.getTopologyDao().register(discoveryCdpTopology);
-        return discoveryCdpTopology;
+    public static EnlinkdOnmsTopologyUpdater createAndRegister(EnhancedLinkd linkd, ProtocolSupported proto) throws OnmsTopologyException {
+        EnlinkdOnmsTopologyUpdater onmsTopologyUpdater = null;
+        switch (proto) {
+        case CDP:
+            onmsTopologyUpdater = new CdpOnmsTopologyUpdater(
+                                                             linkd.getEventForwarder(),
+                                                             linkd.getTopologyDao(),
+                                                             linkd.getCdpTopologyService(),
+                                                             linkd.getQueryManager(),
+                                                             linkd.getBridgeTopologyInterval(),
+                                                             linkd.getInitialSleepTime()
+                                                                     + linkd.getBridgeTopologyInterval());
+
+            break;
+        case BRIDGE:
+            return null;
+        case ISIS:
+            onmsTopologyUpdater = new IsisOnmsTopologyUpdater(
+                                                             linkd.getEventForwarder(),
+                                                             linkd.getTopologyDao(),
+                                                             linkd.getIsisTopologyService(),
+                                                             linkd.getQueryManager(),
+                                                             linkd.getBridgeTopologyInterval(),
+                                                             linkd.getInitialSleepTime()
+                                                                     + linkd.getBridgeTopologyInterval());
+
+            break;
+        case LLDP:
+            onmsTopologyUpdater = new LldpOnmsTopologyUpdater(
+                                                             linkd.getEventForwarder(),
+                                                             linkd.getTopologyDao(),
+                                                             linkd.getLldpTopologyService(),
+                                                             linkd.getQueryManager(),
+                                                             linkd.getBridgeTopologyInterval(),
+                                                             linkd.getInitialSleepTime()
+                                                                     + linkd.getBridgeTopologyInterval());
+            break;
+        case OSPF:
+            onmsTopologyUpdater = new OspfOnmsTopologyUpdater(
+                                                             linkd.getEventForwarder(),
+                                                             linkd.getTopologyDao(),
+                                                             linkd.getOspfTopologyService(),
+                                                             linkd.getQueryManager(),
+                                                             linkd.getBridgeTopologyInterval(),
+                                                             linkd.getInitialSleepTime()
+                                                                     + linkd.getBridgeTopologyInterval());
+
+            break;
+        default: 
+            return null;
+            
+        }
+        linkd.getTopologyDao().register(onmsTopologyUpdater);
+        return onmsTopologyUpdater;
     }
 
     private final static Logger LOG = LoggerFactory.getLogger(EnhancedLinkd.class);
@@ -122,7 +166,11 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
     @Autowired
     private LocationAwareSnmpClient m_locationAwareSnmpClient;
 
-    private CdpOnmsTopologyUpdater m_discoveryCdpTopology;
+    private CdpOnmsTopologyUpdater m_cdpTopologyUpdater;
+    private LldpOnmsTopologyUpdater m_lldpTopologyUpdater;
+    private IsisOnmsTopologyUpdater m_isisTopologyUpdater;
+    private OspfOnmsTopologyUpdater m_ospfTopologyUpdater;
+    
     private DiscoveryBridgeDomains m_discoveryBridgeDomains;
 
     /**
@@ -162,8 +210,21 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         }
 
         if (m_linkdConfig.useCdpDiscovery()) {
-            scheduleDiscoveryCdpTopology();
+            m_cdpTopologyUpdater = (CdpOnmsTopologyUpdater)scheduleOnmsTopologyUpdater(ProtocolSupported.CDP);
         }
+
+        if (m_linkdConfig.useLldpDiscovery()) {
+            m_lldpTopologyUpdater = (LldpOnmsTopologyUpdater)scheduleOnmsTopologyUpdater(ProtocolSupported.LLDP);
+        }
+
+        if (m_linkdConfig.useIsisDiscovery()) {
+            m_isisTopologyUpdater = (IsisOnmsTopologyUpdater)scheduleOnmsTopologyUpdater(ProtocolSupported.ISIS);
+        }
+        
+        if (m_linkdConfig.useOspfDiscovery()) {
+            m_ospfTopologyUpdater = (OspfOnmsTopologyUpdater)scheduleOnmsTopologyUpdater(ProtocolSupported.OSPF);
+        }
+
 
     }
 
@@ -179,17 +240,20 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
             throw e;
         }
     }
-    public void scheduleDiscoveryCdpTopology() {
+    
+    public EnlinkdOnmsTopologyUpdater scheduleOnmsTopologyUpdater(ProtocolSupported proto) {
+        EnlinkdOnmsTopologyUpdater onmsTopologyUpdater = null;
          try {
-            m_discoveryCdpTopology = createAndRegister(this);
+             onmsTopologyUpdater = createAndRegister(this,proto);
         } catch (OnmsTopologyException e) {
             LOG.error("OnmsTopologyException: cannote schedule: {} {} {}", e.getMessage(),e.getId(),e.getProtocol());
-            return;
+            return null;
         }
          LOG.debug("scheduleDiscoveryCdpTopology: Scheduling {}",
-                   m_discoveryCdpTopology.getInfo());
-         m_discoveryCdpTopology.setScheduler(m_scheduler);
-         m_discoveryCdpTopology.schedule();
+                   onmsTopologyUpdater.getInfo());
+         onmsTopologyUpdater.setScheduler(m_scheduler);
+         onmsTopologyUpdater.schedule();
+         return onmsTopologyUpdater;
     }
 
     public void scheduleDiscoveryBridgeDomain() {
@@ -387,20 +451,47 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         }
     }
 
-    public void runDiscoveryCdpTopology() {
-        if (m_discoveryCdpTopology != null) {
-            m_discoveryCdpTopology.runDiscovery();
+    public void runTopologyUpdater(ProtocolSupported proto) {
+        switch (proto) {
+            case CDP:
+            if (m_cdpTopologyUpdater != null) {
+                m_cdpTopologyUpdater.runDiscovery();
+            }
+            break;
+      
+            case LLDP:
+            if (m_lldpTopologyUpdater != null) {
+                m_lldpTopologyUpdater.runDiscovery();
+            }
+            break;
+            
+            case ISIS:
+            if (m_isisTopologyUpdater != null) {
+                m_isisTopologyUpdater.runDiscovery();
+            }
+            break;
+            
+            case OSPF:
+            if (m_ospfTopologyUpdater != null) {
+                m_ospfTopologyUpdater.runDiscovery();
+            }
+            break;
+            
+            case BRIDGE:
+                break;
+            
+            default:
+                break;
+            
         }
     }
-    
+
+
+
     public DiscoveryBridgeDomains getDiscoveryBridgeDomains() {
         return m_discoveryBridgeDomains;
     }
     
-    public CdpOnmsTopologyUpdater getDiscoveryCdpTopology() {
-        return m_discoveryCdpTopology;
-    }
-
     void wakeUpNodeCollection(int nodeid) {
 
         if (!m_nodes.containsKey(nodeid)) {
@@ -614,6 +705,32 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
     public void setIpNetToMediaTopologyService(
             IpNetToMediaTopologyService ipNetToMediaTopologyService) {
         m_ipNetToMediaTopologyService = ipNetToMediaTopologyService;
+    }
+
+    public CdpOnmsTopologyUpdater getCdpTopologyUpdater() {
+        return m_cdpTopologyUpdater;
+    }
+
+    public void setCdpTopologyUpdater(CdpOnmsTopologyUpdater cdpTopologyUpdater) {
+        m_cdpTopologyUpdater = cdpTopologyUpdater;
+    }
+
+    public LldpOnmsTopologyUpdater getLldpTopologyUpdater() {
+        return m_lldpTopologyUpdater;
+    }
+
+    public void setLldpTopologyUpdater(
+            LldpOnmsTopologyUpdater lldpTopologyUpdater) {
+        m_lldpTopologyUpdater = lldpTopologyUpdater;
+    }
+
+    public IsisOnmsTopologyUpdater getIsisTopologyUpdater() {
+        return m_isisTopologyUpdater;
+    }
+
+    public void setIsisTopologyUpdater(
+            IsisOnmsTopologyUpdater isisTopologyUpdater) {
+        m_isisTopologyUpdater = isisTopologyUpdater;
     }
 
 
