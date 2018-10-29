@@ -38,7 +38,7 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyException;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyMessage;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyUpdater;
-import org.opennms.netmgt.topologies.service.api.TopologyDao;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,11 +46,11 @@ public abstract class EnlinkdOnmsTopologyUpdater extends Discovery implements On
 
     private static final Logger LOG = LoggerFactory.getLogger(EnlinkdOnmsTopologyUpdater.class);
 
-    private final TopologyDao m_topologyDao;
+    private final OnmsTopologyDao m_topologyDao;
     private final NodeTopologyService m_nodeTopologyService;
 
     public EnlinkdOnmsTopologyUpdater(EventForwarder eventforwarder,
-            TopologyDao topologyDao, NodeTopologyService nodeTopologyService,
+            OnmsTopologyDao topologyDao, NodeTopologyService nodeTopologyService,
             long interval, long initialsleeptime) {
         super(eventforwarder, interval, initialsleeptime);
         m_topologyDao = topologyDao;
@@ -78,7 +78,7 @@ public abstract class EnlinkdOnmsTopologyUpdater extends Discovery implements On
         LOG.debug("run: end");
     }
 
-    public TopologyDao getTopologyDao() {
+    public OnmsTopologyDao getTopologyDao() {
         return m_topologyDao;
     }
 

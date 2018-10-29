@@ -34,21 +34,21 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.opennms.netmgt.enlinkd.model.CdpLink;
 import org.opennms.netmgt.enlinkd.service.api.CdpTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
+import org.opennms.netmgt.enlinkd.service.api.Topology;
+import org.opennms.netmgt.enlinkd.service.api.Topology.ProtocolSupported;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
-import org.opennms.netmgt.topologies.service.api.Topology;
-import org.opennms.netmgt.topologies.service.api.TopologyDao;
-import org.opennms.netmgt.topologies.service.api.Topology.ProtocolSupported;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 
 public class CdpOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
 
     private final CdpTopologyService m_cdpTopologyService;
 
     public CdpOnmsTopologyUpdater(EventForwarder eventforwarder,
-            TopologyDao topologyDao, CdpTopologyService cdpTopologyService, NodeTopologyService nodeTopologyService,
+            OnmsTopologyDao topologyDao, CdpTopologyService cdpTopologyService, NodeTopologyService nodeTopologyService,
             long interval, long initialsleeptime) {
         super(eventforwarder, topologyDao,nodeTopologyService,interval, initialsleeptime);
         m_cdpTopologyService = cdpTopologyService;

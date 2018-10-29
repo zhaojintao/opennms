@@ -42,9 +42,9 @@ import org.opennms.netmgt.enlinkd.model.IsIsElement;
 import org.opennms.netmgt.enlinkd.model.IsIsLink;
 import org.opennms.netmgt.enlinkd.persistence.api.IsIsElementDao;
 import org.opennms.netmgt.enlinkd.persistence.api.IsIsLinkDao;
+import org.opennms.netmgt.enlinkd.service.api.CompositeKey;
 import org.opennms.netmgt.enlinkd.service.api.IsisTopologyService;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.topologies.service.api.CompositeKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -202,7 +202,7 @@ public class IsisTopologyServiceImpl implements IsisTopologyService {
                 continue;
             }
             if (LOG.isDebugEnabled()) {
-                LOG.debug("getIsIsLinks: source: {}", sourceLink.printTopology());
+                LOG.debug("getIsIsLinks: source: {}", sourceLink);
             }
             IsIsElement sourceElement = elementmap.get(sourceLink.getNode().getId());
             IsIsLink targetLink = targetLinkMap.get(new CompositeKey(sourceLink.getIsisISAdjIndex(),
@@ -217,7 +217,7 @@ public class IsisTopologyServiceImpl implements IsisTopologyService {
                 continue;
             }
             if (LOG.isDebugEnabled()) {
-                LOG.debug("getIsIsLinks: target: {}", targetLink.printTopology());
+                LOG.debug("getIsIsLinks: target: {}", targetLink);
             }
             results.add(Pair.of(sourceLink, targetLink));
             parsed.add(sourceLink.getId());

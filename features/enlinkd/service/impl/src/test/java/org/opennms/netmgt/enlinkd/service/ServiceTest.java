@@ -75,7 +75,7 @@ import org.opennms.netmgt.enlinkd.service.api.IsisTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.LldpTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.OspfTopologyService;
-import org.opennms.netmgt.topologies.service.api.Topology;
+import org.opennms.netmgt.enlinkd.service.api.Topology;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -308,7 +308,7 @@ public class ServiceTest {
         assertEquals(matchesOld, matchesNew);
     }
 
-    private <Link extends Topology> void assertMatching(List<Link> allLinks, List<Pair<Link, Link>> matchedLinks){
+    private <Link> void assertMatching(List<Link> allLinks, List<Pair<Link, Link>> matchedLinks){
         // we expect:
         // 1 and 3 will match
         // 4 and 5 will match

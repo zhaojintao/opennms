@@ -38,6 +38,8 @@ import org.opennms.netmgt.enlinkd.model.CdpElement;
 import org.opennms.netmgt.enlinkd.model.CdpLink;
 import org.opennms.netmgt.enlinkd.service.api.CdpTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
+import org.opennms.netmgt.enlinkd.service.api.Topology;
+import org.opennms.netmgt.enlinkd.service.api.Topology.ProtocolSupported;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
@@ -46,9 +48,7 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopologyException;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyMessage;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyUpdater;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
-import org.opennms.netmgt.topologies.service.api.Topology;
-import org.opennms.netmgt.topologies.service.api.TopologyDao;
-import org.opennms.netmgt.topologies.service.api.Topology.ProtocolSupported;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,12 +56,12 @@ public class BridgeOnmsTopologyUpdater extends Discovery implements OnmsTopology
 
     private static final Logger LOG = LoggerFactory.getLogger(BridgeOnmsTopologyUpdater.class);
 
-    protected final TopologyDao m_topologyDao;
+    protected final OnmsTopologyDao m_topologyDao;
     protected final CdpTopologyService m_cdpTopologyService;
     protected final NodeTopologyService m_nodeTopologyService;
 
     public BridgeOnmsTopologyUpdater(EventForwarder eventforwarder,
-            TopologyDao topologyDao, CdpTopologyService cdpTopologyService, NodeTopologyService nodeTopologyService,
+            OnmsTopologyDao topologyDao, CdpTopologyService cdpTopologyService, NodeTopologyService nodeTopologyService,
             long interval, long initialsleeptime) {
         super(eventforwarder, interval, initialsleeptime);
         m_topologyDao = topologyDao;
@@ -115,7 +115,7 @@ public class BridgeOnmsTopologyUpdater extends Discovery implements OnmsTopology
             if (parsed.contains(sourceLink.getId())) { 
                 continue;
             }
-            LOG.warn("getCdpTopology: source: {} ", sourceLink.printTopology());
+            LOG.warn("getCdpTopology: source: {} ", sourceLink);
             CdpElement sourceCdpElement = cdpelementmap.get(sourceLink.getNode().getId());
             CdpLink targetLink = null;
             for (CdpLink link : allLinks) {
@@ -130,7 +130,7 @@ public class BridgeOnmsTopologyUpdater extends Discovery implements OnmsTopology
 
                 if (sourceLink.getCdpInterfaceName().equals(link.getCdpCacheDevicePort()) && link.getCdpInterfaceName().equals(sourceLink.getCdpCacheDevicePort())) {
                     targetLink=link;
-                    LOG.warn("getCdpLinks: cdp: {}, target: {} ", link.getCdpCacheDevicePort(), targetLink.printTopology());
+                    LOG.warn("getCdpLinks: cdp: {}, target: {} ", link.getCdpCacheDevicePort(), targetLink);
                     break;
                 }
             }

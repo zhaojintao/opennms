@@ -44,8 +44,8 @@ import org.opennms.netmgt.enlinkd.model.CdpLink;
 import org.opennms.netmgt.enlinkd.persistence.api.CdpElementDao;
 import org.opennms.netmgt.enlinkd.persistence.api.CdpLinkDao;
 import org.opennms.netmgt.enlinkd.service.api.CdpTopologyService;
+import org.opennms.netmgt.enlinkd.service.api.CompositeKey;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.topologies.service.api.CompositeKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -175,7 +175,7 @@ public class CdpTopologyServiceImpl implements CdpTopologyService {
                 continue;
             }
             if (LOG.isDebugEnabled()) {
-                LOG.debug("getCdpLinks: source: {} ", sourceLink.printTopology());
+                LOG.debug("getCdpLinks: source: {} ", sourceLink);
             }
             CdpElement sourceCdpElement = cdpelementmap.get(sourceLink.getNode().getId());
 
@@ -194,7 +194,7 @@ public class CdpTopologyServiceImpl implements CdpTopologyService {
             }
 
             if (LOG.isDebugEnabled()) {
-                LOG.debug("getCdpLinks: cdp: {}, target: {} ", sourceLink.getCdpCacheDevicePort(), targetLink.printTopology());
+                LOG.debug("getCdpLinks: cdp: {}, target: {} ", sourceLink.getCdpCacheDevicePort(), targetLink);
             }
 
             parsed.add(sourceLink.getId());

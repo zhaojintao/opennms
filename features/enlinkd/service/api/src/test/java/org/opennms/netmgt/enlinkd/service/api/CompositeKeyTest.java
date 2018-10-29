@@ -26,17 +26,27 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.topologies.service.api;
+package org.opennms.netmgt.enlinkd.service.api;
 
-public interface Topology {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
-    public enum ProtocolSupported {
-        LLDP,
-        OSPF,
-        ISIS,
-        BRIDGE,
-        CDP
+import org.junit.Test;
+import org.opennms.netmgt.enlinkd.service.api.CompositeKey;
+
+public class CompositeKeyTest {
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldRejectNoKeysInvocation() {
+        new CompositeKey();
     }
 
-    String printTopology();
+    @Test
+    public void equalsAndHashCodeShouldWork() {
+        CompositeKey same1 = new CompositeKey("aa", 33);
+        CompositeKey same2 = new CompositeKey("aa", 33);
+        CompositeKey different = new CompositeKey("aa", 31);
+        assertEquals(same1, same2);
+        assertEquals(same1.hashCode(), same2.hashCode());
+        assertNotEquals(same1, different);
+    }
 }

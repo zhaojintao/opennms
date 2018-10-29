@@ -38,9 +38,9 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopologyConsumer;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyException;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyMessage;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyUpdater;
-import org.opennms.netmgt.topologies.service.api.TopologyDao;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 
-public class TopologyDaoInMemoryImpl implements TopologyDao {
+public class TopologyDaoInMemoryImpl implements OnmsTopologyDao {
 
 
     private Map<String,OnmsTopologyUpdater> m_updatersMap = new HashMap<String, OnmsTopologyUpdater>();

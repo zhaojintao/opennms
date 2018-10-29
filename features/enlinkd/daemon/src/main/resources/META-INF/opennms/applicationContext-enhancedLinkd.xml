@@ -31,7 +31,7 @@
       <property name="ipNetToMediaTopologyService"   ref="ipNetToMediaTopologyService" />
       <property name="lldpTopologyService"   ref="lldpTopologyService" />
       <property name="ospfTopologyService"   ref="ospfTopologyService" />
-      <property name="topologyDao"   ref="topologyDao" />
+      <property name="onmsTopologyDao"   ref="onmsTopologyDao" />
     </bean>
 
     <bean id="receiver" class="org.opennms.netmgt.enlinkd.EventProcessor">

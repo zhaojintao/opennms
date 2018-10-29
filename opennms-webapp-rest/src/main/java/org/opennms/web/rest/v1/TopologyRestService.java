@@ -44,7 +44,7 @@ import org.opennms.features.graphml.model.GraphMLWriter;
 import org.opennms.features.graphml.model.InvalidGraphException;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyException;
-import org.opennms.netmgt.topologies.service.api.TopologyDao;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -64,7 +64,7 @@ public class TopologyRestService {
     private final static String TARGET_IFINDEX= "targetifindex";
     
     @Autowired
-    private TopologyDao m_topologyDao;
+    private OnmsTopologyDao m_topologyDao;
 
     @GET
     @Produces(MediaType.TEXT_PLAIN)

@@ -97,17 +97,17 @@ import org.opennms.netmgt.enlinkd.model.LldpElement;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
 import org.opennms.netmgt.enlinkd.model.CdpLink.CiscoNetworkProtocolType;
 import org.opennms.netmgt.enlinkd.model.OspfElement.TruthValue;
+import org.opennms.netmgt.enlinkd.service.api.Topology.ProtocolSupported;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.Nms17216NetworkBuilder;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
-import org.opennms.netmgt.topologies.service.api.Topology.ProtocolSupported;
 import org.opennms.netmgt.topologies.service.impl.TopologyLogger;
 
 public class Nms17216EnIT extends EnLinkdBuilderITCase {
         
     public static TopologyLogger createAndSubscribe(String protocol, EnhancedLinkd linkd) {
         TopologyLogger tl = new TopologyLogger(protocol);
-        linkd.getTopologyDao().subscribe(tl);
+        linkd.getOnmsTopologyDao().subscribe(tl);
         return tl;
     }
 

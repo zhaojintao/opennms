@@ -82,19 +82,19 @@ public abstract class EnLinkdTestHelper {
     }
 
     protected static void printCdpElement(final CdpElement cdpElement) {
-        System.err.println(cdpElement.printTopology());
+        System.err.println(cdpElement);
     }
 
     protected static void printCdpLink(CdpLink link) {
-        System.err.println(link.printTopology());
+        System.err.println(link);
     }
 
     protected static void printLldpElement(final LldpElement lldpElement) {
-        System.err.println(lldpElement.printTopology());
+        System.err.println(lldpElement);
     }
 
     protected static void printLldpLink(LldpLink link) {
-        System.err.println(link.printTopology());
+        System.err.println(link);
     }
 
     protected static void printOspfTopology(List<OspfLink> ospflinks) {
@@ -108,11 +108,11 @@ public abstract class EnLinkdTestHelper {
     }
 
     protected static void printOspfElement(final OspfElement element) {
-        System.err.println(element.printTopology()); 
+        System.err.println(element); 
     }
 
     protected static void printOspfLink(OspfLink link) {
-        System.err.println(link.printTopology());
+        System.err.println(link);
     }
 
     public void setBridgeElements(BroadcastDomain domain, List<BridgeElement> elements) {

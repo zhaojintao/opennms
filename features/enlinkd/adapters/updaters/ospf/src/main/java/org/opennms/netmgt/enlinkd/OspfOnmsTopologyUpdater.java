@@ -35,21 +35,21 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.enlinkd.model.OspfLink;
 import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.OspfTopologyService;
+import org.opennms.netmgt.enlinkd.service.api.Topology;
+import org.opennms.netmgt.enlinkd.service.api.Topology.ProtocolSupported;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
-import org.opennms.netmgt.topologies.service.api.Topology;
-import org.opennms.netmgt.topologies.service.api.TopologyDao;
-import org.opennms.netmgt.topologies.service.api.Topology.ProtocolSupported;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 
 public class OspfOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
 
     protected final OspfTopologyService m_ospfTopologyService;
 
     public OspfOnmsTopologyUpdater(EventForwarder eventforwarder,
-            TopologyDao topologyDao, OspfTopologyService ospfTopologyService, NodeTopologyService nodeTopologyService,
+            OnmsTopologyDao topologyDao, OspfTopologyService ospfTopologyService, NodeTopologyService nodeTopologyService,
             long interval, long initialsleeptime) {
         super(eventforwarder, topologyDao,nodeTopologyService,interval, initialsleeptime);
         m_ospfTopologyService = ospfTopologyService;

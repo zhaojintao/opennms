@@ -42,9 +42,9 @@ import org.opennms.netmgt.enlinkd.model.OspfElement;
 import org.opennms.netmgt.enlinkd.model.OspfLink;
 import org.opennms.netmgt.enlinkd.persistence.api.OspfElementDao;
 import org.opennms.netmgt.enlinkd.persistence.api.OspfLinkDao;
+import org.opennms.netmgt.enlinkd.service.api.CompositeKey;
 import org.opennms.netmgt.enlinkd.service.api.OspfTopologyService;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.topologies.service.api.CompositeKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -193,7 +193,7 @@ public class OspfTopologyServiceImpl implements OspfTopologyService {
             }
             parsed.add(sourceLink.getId());
             if (LOG.isDebugEnabled()) {
-                LOG.debug("getOspfLinks: source: {}", sourceLink.printTopology());
+                LOG.debug("getOspfLinks: source: {}", sourceLink);
             }
             OspfLink targetLink = targetLinks.get(new CompositeKey(sourceLink.getOspfRemIpAddr() , sourceLink.getOspfIpAddr()));
             if(targetLink == null) {
@@ -205,7 +205,7 @@ public class OspfTopologyServiceImpl implements OspfTopologyService {
                     continue;
             }
 
-            LOG.debug("getOspfLinks: target: {}", targetLink.printTopology());
+            LOG.debug("getOspfLinks: target: {}", targetLink);
             parsed.add(targetLink.getId());
            results.add(Pair.of(sourceLink, targetLink));
         }

@@ -43,9 +43,9 @@ import org.opennms.netmgt.enlinkd.model.LldpElement;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
 import org.opennms.netmgt.enlinkd.persistence.api.LldpElementDao;
 import org.opennms.netmgt.enlinkd.persistence.api.LldpLinkDao;
+import org.opennms.netmgt.enlinkd.service.api.CompositeKey;
 import org.opennms.netmgt.enlinkd.service.api.LldpTopologyService;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.topologies.service.api.CompositeKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -206,13 +206,13 @@ public class LldpTopologyServiceImpl implements LldpTopologyService {
                 String sourceLldpChassisId = nodelldpelementidMap.get(sourceLink.getNode().getId()).getLldpChassisId();
                 if (sourceLldpChassisId.equals(sourceLink.getLldpRemChassisId())) {
                     if (LOG.isDebugEnabled()) {
-                        LOG.debug("getLldpLinks: self link not adding source: {}",sourceLink.printTopology());
+                        LOG.debug("getLldpLinks: self link not adding source: {}",sourceLink);
                     }
                     parsed.add(sourceLink.getId());
                     continue;
                 }
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug("getLldpLinks: source: {}",sourceLink.printTopology());
+                    LOG.debug("getLldpLinks: source: {}",sourceLink);
                 }
 
                 CompositeKey key = new CompositeKey(
@@ -230,7 +230,7 @@ public class LldpTopologyServiceImpl implements LldpTopologyService {
                 }
 
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug("getLldpLinks: lldp: {} target: {}", sourceLink.getLldpRemChassisId(), targetLink.printTopology());
+                    LOG.debug("getLldpLinks: lldp: {} target: {}", sourceLink.getLldpRemChassisId(), targetLink);
                 }
 
                 parsed.add(sourceLink.getId());

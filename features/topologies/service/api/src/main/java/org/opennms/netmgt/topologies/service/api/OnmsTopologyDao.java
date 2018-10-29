@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,36 +28,20 @@
 
 package org.opennms.netmgt.topologies.service.api;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.Set;
 
-public final class CompositeKey {
+public interface OnmsTopologyDao {
 
-    private List<Object> keys;
+    OnmsTopology getTopology(String protocol) throws OnmsTopologyException;
+    
+    Set<String> getSupportedProtocols();
 
-    public CompositeKey(Object...keys){
-        if(keys.length<1){
-            throw new IllegalArgumentException("Need at least one key but was supplied with none");
-        }
-        this.keys = Arrays.asList(keys);
-    }
+    void register(OnmsTopologyUpdater updater) throws OnmsTopologyException;
+    void unregister(OnmsTopologyUpdater updater) throws OnmsTopologyException;
 
-    @Override
-    public String toString() {
-        return this.keys.toString();
-    }
+    void subscribe(OnmsTopologyConsumer consumer);
+    void unsubscribe(OnmsTopologyConsumer consumer);
+    
+    void update(OnmsTopologyUpdater updater, OnmsTopologyMessage message) throws OnmsTopologyException;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        CompositeKey that = (CompositeKey) o;
-        return Objects.equals(keys, that.keys);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(keys);
-    }
 }
