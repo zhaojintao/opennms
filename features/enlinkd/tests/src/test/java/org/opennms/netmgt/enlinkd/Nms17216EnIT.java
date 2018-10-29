@@ -101,12 +101,12 @@ import org.opennms.netmgt.enlinkd.service.api.Topology.ProtocolSupported;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.Nms17216NetworkBuilder;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
-import org.opennms.netmgt.topologies.service.impl.TopologyLogger;
+import org.opennms.netmgt.topologies.service.impl.OnmsTopologyLogger;
 
 public class Nms17216EnIT extends EnLinkdBuilderITCase {
         
-    public static TopologyLogger createAndSubscribe(String protocol, EnhancedLinkd linkd) {
-        TopologyLogger tl = new TopologyLogger(protocol);
+    public static OnmsTopologyLogger createAndSubscribe(String protocol, EnhancedLinkd linkd) {
+        OnmsTopologyLogger tl = new OnmsTopologyLogger(protocol);
         linkd.getOnmsTopologyDao().subscribe(tl);
         return tl;
     }
@@ -776,7 +776,7 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
         
         Set<String> protocols= new HashSet<>();
         protocols.add(ProtocolSupported.CDP.name());
-        TopologyLogger tl = createAndSubscribe(
+        OnmsTopologyLogger tl = createAndSubscribe(
                   ProtocolSupported.CDP.name(),m_linkd);
         assertEquals(protocols+":Consumer:Logger", tl.getId());
                 

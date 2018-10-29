@@ -36,12 +36,12 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopologyMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TopologyLogger implements OnmsTopologyConsumer {
+public class OnmsTopologyLogger implements OnmsTopologyConsumer {
     
-    private final static Logger LOG = LoggerFactory.getLogger(TopologyLogger.class);
+    private final static Logger LOG = LoggerFactory.getLogger(OnmsTopologyLogger.class);
 
     private Set<String> m_protocols;
-    public TopologyLogger(String protocol) {
+    public OnmsTopologyLogger(String protocol) {
         m_protocols = new HashSet<String>();
         m_protocols.add(protocol);
     }
