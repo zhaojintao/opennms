@@ -233,7 +233,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         // Create a scheduler
         //
         try {
-            LOG.debug("init: Creating EnhancedLinkd scheduler");
+            LOG.info("init: Creating EnhancedLinkd scheduler");
             setScheduler(new LegacyScheduler("EnhancedLinkd", getLinkdConfig().getThreads()));
         } catch (RuntimeException e) {
             LOG.error("init: Failed to create EnhancedLinkd scheduler", e);
@@ -249,7 +249,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
             LOG.error("OnmsTopologyException: cannote schedule: {} {} {}", e.getMessage(),e.getId(),e.getProtocol());
             return null;
         }
-         LOG.debug("scheduleDiscoveryCdpTopology: Scheduling {}",
+         LOG.info("scheduleDiscoveryCdpTopology: Scheduling {}",
                    onmsTopologyUpdater.getInfo());
          onmsTopologyUpdater.setScheduler(m_scheduler);
          onmsTopologyUpdater.schedule();
@@ -263,7 +263,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
                                                getBridgeTopologyInterval(),
                                                getBridgeTopologyInterval()+getInitialSleepTime(),
                                                getDiscoveryBridgeThreads());
-            LOG.debug("scheduleDiscoveryBridgeDomain: Scheduling {}",
+            LOG.info("scheduleDiscoveryBridgeDomain: Scheduling {}",
                      m_discoveryBridgeDomains.getInfo());
             m_discoveryBridgeDomains.setScheduler(m_scheduler);
             m_discoveryBridgeDomains.schedule();
