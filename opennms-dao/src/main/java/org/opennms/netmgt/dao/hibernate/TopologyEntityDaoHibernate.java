@@ -32,6 +32,7 @@ import java.util.List;
 
 import org.opennms.netmgt.dao.api.TopologyEntityDao;
 import org.opennms.netmgt.model.CdpLinkInfo;
+import org.opennms.netmgt.model.IsIsLinkInfo;
 import org.opennms.netmgt.model.VertexInfo;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
@@ -48,5 +49,11 @@ public class TopologyEntityDaoHibernate extends HibernateDaoSupport implements T
         return (List<CdpLinkInfo>)getHibernateTemplate().find(
                 "select new org.opennms.netmgt.model.CdpLinkInfo(l.id, l.node.id, l.cdpCacheIfIndex, " +
                         "l.cdpInterfaceName, l.cdpCacheAddress, l.cdpCacheDeviceId, l.cdpCacheDevicePort) from org.opennms.netmgt.model.CdpLink l");
+    }
+
+    @Override
+    public List<IsIsLinkInfo> getIsisLinkInfos() {
+        return (List<IsIsLinkInfo>)getHibernateTemplate().find(
+                "select new org.opennms.netmgt.model.IsIsLinkInfo(l.id, l.node.id, l.isisISAdjNeighSysID) from org.opennms.netmgt.model.IsIsLink l");
     }
 }

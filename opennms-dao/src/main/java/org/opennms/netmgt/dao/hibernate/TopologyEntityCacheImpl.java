@@ -34,29 +34,39 @@ import java.util.List;
 import org.opennms.netmgt.dao.api.TopologyEntityDao;
 import org.opennms.netmgt.dao.api.TopologyEntityCache;
 import org.opennms.netmgt.model.CdpLinkInfo;
+import org.opennms.netmgt.model.IsIsLinkInfo;
 import org.opennms.netmgt.model.VertexInfo;
 
 public class TopologyEntityCacheImpl implements TopologyEntityCache {
 
     private List<VertexInfo> vertices;
     private List<CdpLinkInfo> cdpLinks;
+    private List<IsIsLinkInfo> isisLinks;
 
     private TopologyEntityDao topologyEntityDao;
 
     public void refresh(){
         this.vertices = Collections.unmodifiableList(topologyEntityDao.getVertexInfos());
         this.cdpLinks = Collections.unmodifiableList(topologyEntityDao.getCdpLinkInfos());
+        this.isisLinks = Collections.unmodifiableList(topologyEntityDao.getIsIsCdpLinkInfo());
     }
 
+    @Override
     public List<VertexInfo> getVertices(){
         return vertices;
     }
 
+    @Override
     public List<CdpLinkInfo> getCdpLinkInfos(){
         return cdpLinks;
     }
 
-    public void setTopologyEntityDao(TopologyEntityDao topologyEntityDao){
+    @Override
+    public List<IsIsLinkInfo> getIsIsLinkInfos() {
+        return isisLinks;
+    }
+
+    public void setTopologyEntityDao(TopologyEntityDao topologyEntityDao) {
         this.topologyEntityDao = topologyEntityDao;
     }
 }
