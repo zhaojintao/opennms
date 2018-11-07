@@ -51,16 +51,15 @@ import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.enlinkd.model.CdpLink;
-import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
 import org.opennms.netmgt.enlinkd.model.IsIsLink;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
 import org.opennms.netmgt.enlinkd.model.OspfLink;
-import org.opennms.netmgt.enlinkd.persistence.api.IpNetToMediaDao;
 import org.opennms.netmgt.enlinkd.service.api.BridgePort;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyException;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.BroadcastDomain;
 import org.opennms.netmgt.enlinkd.service.api.CdpTopologyService;
+import org.opennms.netmgt.enlinkd.service.api.IpNetToMediaTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.IsisTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.LldpTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.OspfTopologyService;
@@ -77,7 +76,9 @@ import org.springframework.transaction.support.TransactionOperations;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
+import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Table;
 
 public class LinkdTopologyProvider extends AbstractTopologyProvider implements GraphProvider {
 
@@ -120,10 +121,10 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     private LldpTopologyService m_lldpTopologyService;
     private OspfTopologyService m_ospfTopologyService;
     private IsisTopologyService m_isisTopologyService;
-    private IpNetToMediaDao m_ipNetToMediaDao;
+    private IpNetToMediaTopologyService m_ipNetToMediaTopologyService;
 
     private Map<Integer, OnmsIpInterface> m_nodeToOnmsIpPrimaryMap =new HashMap<>();
-    private Map<Integer, Map<Integer,OnmsSnmpInterface>> m_nodeToOnmsSnmpMap = new HashMap<>();
+    private Table<Integer, Integer,OnmsSnmpInterface> m_nodeToOnmsSnmpMap = HashBasedTable.create();
     private Map<String, Integer> m_macToNodeidMap = new HashMap<>();
     private Map<String, OnmsIpInterface> m_macToOnmsIpMap = new HashMap<>();
     private Map<String, OnmsSnmpInterface> m_macToOnmsSnmpMap = new HashMap<>();
@@ -161,10 +162,8 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     }
 
     private OnmsSnmpInterface getSnmpInterface(Integer nodeid, Integer ifindex) {
-        if(m_nodeToOnmsSnmpMap.containsKey(nodeid)) {
-            if (m_nodeToOnmsSnmpMap.get(nodeid).containsKey(ifindex)) {
-                return m_nodeToOnmsSnmpMap.get(nodeid).get(ifindex);
-            }
+        if(m_nodeToOnmsSnmpMap.contains(nodeid,ifindex) ) {
+                return m_nodeToOnmsSnmpMap.get(nodeid,ifindex);
         }
         OnmsSnmpInterface snmpiface = new OnmsSnmpInterface();
         OnmsNode node = new OnmsNode();
@@ -523,13 +522,6 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         m_bridgeTopologyService = bridgeTopologyService;
     }
 
-    public IpNetToMediaDao getIpNetToMediaDao() {
-        return m_ipNetToMediaDao;
-    }
-    
-    public void setIpNetToMediaDao(IpNetToMediaDao ipNetToMediaDao) {
-        m_ipNetToMediaDao = ipNetToMediaDao;
-    }
         
     @Override
     public Defaults getDefaults() {
@@ -581,12 +573,9 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         vcontext = m_loadSnmpInterfacesTimer.time();
         try {
             for (OnmsSnmpInterface snmp: m_snmpInterfaceDao.findAll()) {
-                // Index the SNMP interfaces by node id
-                final int nodeId = snmp.getNode().getId();
-                if (!m_nodeToOnmsSnmpMap.containsKey(nodeId)) {
-                    m_nodeToOnmsSnmpMap.put(nodeId, new HashMap<Integer, OnmsSnmpInterface>());
+                if (!m_nodeToOnmsSnmpMap.contains(snmp.getNode().getId(),snmp.getIfIndex())) {
+                    m_nodeToOnmsSnmpMap.put(snmp.getNode().getId(),snmp.getIfIndex(),snmp);
                 }
-                m_nodeToOnmsSnmpMap.get(nodeId).put(snmp.getIfIndex(), snmp);
             }
             LOG.info("refresh: Snmp Interface loaded");
         } catch (Exception e){
@@ -597,47 +586,44 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
         vcontext = m_loadIpNetToMediaTimer.time();
 
-        Set<String> multiIpMacs = new HashSet<String>();
-        Set<String> multiSnmpMacs = new HashSet<String>();
-
         // mac -> ip[]  ->  snmp[]    —> macToNodeMap
         // mac -> ip    ->  snmp      —> macToNodeMap, macToIpMap, macToSnmpMap
         // mac -> ip    ->  no snmp   —> macToNodeMap, macToIpMap
         // mac -> ip[]  ->  no snmp   —> macToNodeMap
         // mac -> ip[]  ->  snmp      —> macToSnmpMap
+        Map<InetAddress, String> iptoMacMap = m_ipNetToMediaTopologyService.getIpMacMap();
         try {
-            for (IpNetToMedia ipnettomedia: m_ipNetToMediaDao.findAll()) {
-                OnmsIpInterface onmsip = ipToOnmsIpMap.get(ipnettomedia.getNetAddress());
+            for (InetAddress ipAddr: iptoMacMap.keySet()) {
+                OnmsIpInterface onmsip = ipToOnmsIpMap.get(ipAddr);
+                String mac = iptoMacMap.get(ipAddr);
                 if (onmsip == null) {
-                    LOG.debug("refresh: ipNetToMedia: {}:{}. No OnmsIpInterface found.", ipnettomedia.getPhysAddress(),InetAddressUtils.str(ipnettomedia.getNetAddress()));
+                    LOG.debug("refresh: ipNetToMedia: {}:{}. No OnmsIpInterface found.", mac,InetAddressUtils.str(ipAddr));
                     continue;
                 }
-                LOG.debug("refresh: ipNetToMedia: {}:{}. OnmsIpInterface found node:[{}].", ipnettomedia.getPhysAddress(),
-                          InetAddressUtils.str(ipnettomedia.getNetAddress()),onmsip.getNodeId());
-                if (!m_macToNodeidMap.containsKey(ipnettomedia.getPhysAddress())) {
-                    m_macToNodeidMap.put(ipnettomedia.getPhysAddress(), onmsip.getNodeId());
+                LOG.debug("refresh: ipNetToMedia: {}:{}. OnmsIpInterface found node:[{}].", mac,
+                          InetAddressUtils.str(ipAddr),onmsip.getNodeId());
+
+                if (!m_macToNodeidMap.containsKey(mac)) {
+                    m_macToNodeidMap.put(mac, onmsip.getNodeId());
                 }
-                if (!m_macToOnmsIpMap.containsKey(ipnettomedia.getPhysAddress())) {
-                    m_macToOnmsIpMap.put(ipnettomedia.getPhysAddress(), onmsip);
+
+                if (!m_macToOnmsIpMap.containsKey(mac)) {
+                    m_macToOnmsIpMap.put(mac, onmsip);
                 } else {
-                    multiIpMacs.add(ipnettomedia.getPhysAddress());
-                    LOG.debug("refresh: ipNetToMedia: {}:{}. Multiple OnmsIpInterface found.", ipnettomedia.getPhysAddress(),InetAddressUtils.str(ipnettomedia.getNetAddress()));
+                    LOG.debug("refresh: ipNetToMedia: {}:{}. Multiple OnmsIpInterface found.", mac,InetAddressUtils.str(ipAddr));
                 }
-                if (m_nodeToOnmsSnmpMap.containsKey(onmsip.getNodeId())) {
-                for (OnmsSnmpInterface onmssnmp : m_nodeToOnmsSnmpMap.get(onmsip.getNodeId()).values() ) {
-                    if (onmssnmp.getId().intValue() == onmssnmp.getId().intValue()) {
-                        if (!m_macToOnmsSnmpMap.containsKey(ipnettomedia.getPhysAddress())) {
-                            m_macToOnmsSnmpMap.put(ipnettomedia.getPhysAddress(), onmssnmp);
-                        } else if (m_macToOnmsSnmpMap.get(ipnettomedia.getPhysAddress()).getId().intValue() == onmssnmp.getId() ) {
+                if (m_nodeToOnmsSnmpMap.containsRow(onmsip.getNodeId())) {
+                    for (OnmsSnmpInterface onmssnmp : m_nodeToOnmsSnmpMap.row(onmsip.getNodeId()).values() ) {
+                        if (!m_macToOnmsSnmpMap.containsKey(mac)) {
+                            m_macToOnmsSnmpMap.put(mac, onmssnmp);
+                        } else if (m_macToOnmsSnmpMap.get(mac).getId().intValue() == onmssnmp.getId() ) {
                             continue;
                         } else {
-                            multiSnmpMacs.add(ipnettomedia.getPhysAddress());
-                            LOG.debug("refresh: ipNetToMedia: {}:{}. Multiple OnmsSnmpInterface found.", ipnettomedia.getPhysAddress(),InetAddressUtils.str(ipnettomedia.getNetAddress()));                                
+                            LOG.debug("refresh: ipNetToMedia: {}:{}. Multiple OnmsSnmpInterface found.", mac,InetAddressUtils.str(ipAddr));                                
                         }
                     }
-                }
                 } else {
-                    LOG.debug("refresh: ipNetToMedia: {}:{}. No OnmsSnmpInterface found.", ipnettomedia.getPhysAddress(),InetAddressUtils.str(ipnettomedia.getNetAddress()));
+                    LOG.debug("refresh: ipNetToMedia: {}:{}. No OnmsSnmpInterface found.", mac,InetAddressUtils.str(ipAddr));
                 }
             }
             LOG.info("refresh: IpNetToMedia loaded");
@@ -710,5 +696,12 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     }
     public void setIsisTopologyService(IsisTopologyService isisTopologyService) {
         m_isisTopologyService = isisTopologyService;
+    }
+    public IpNetToMediaTopologyService getIpNetToMediaTopologyService() {
+        return m_ipNetToMediaTopologyService;
+    }
+    public void setIpNetToMediaTopologyService(
+            IpNetToMediaTopologyService ipNetToMediaTopologyService) {
+        m_ipNetToMediaTopologyService = ipNetToMediaTopologyService;
     }
 }

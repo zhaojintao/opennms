@@ -102,7 +102,7 @@
         <property name="nodeDao" ref="nodeDao" />
         <property name="snmpInterfaceDao" ref="snmpInterfaceDao" />
         <property name="ipInterfaceDao" ref="ipInterfaceDao" />
-        <property name="ipNetToMediaDao" ref="ipNetToMediaDao" />
+        <property name="ipNetToMediaTopologyService" ref="ipNetToMediaTopologyService" />
     </bean>
 </beans>
 
