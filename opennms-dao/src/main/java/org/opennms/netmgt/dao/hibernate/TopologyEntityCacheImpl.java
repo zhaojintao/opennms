@@ -31,8 +31,8 @@ package org.opennms.netmgt.dao.hibernate;
 import java.util.Collections;
 import java.util.List;
 
-import org.opennms.netmgt.dao.api.TopologyEntityDao;
 import org.opennms.netmgt.dao.api.TopologyEntityCache;
+import org.opennms.netmgt.dao.api.TopologyEntityDao;
 import org.opennms.netmgt.model.CdpLinkInfo;
 import org.opennms.netmgt.model.IsIsLinkInfo;
 import org.opennms.netmgt.model.VertexInfo;
@@ -48,7 +48,7 @@ public class TopologyEntityCacheImpl implements TopologyEntityCache {
     public void refresh(){
         this.vertices = Collections.unmodifiableList(topologyEntityDao.getVertexInfos());
         this.cdpLinks = Collections.unmodifiableList(topologyEntityDao.getCdpLinkInfos());
-        this.isisLinks = Collections.unmodifiableList(topologyEntityDao.getIsIsCdpLinkInfo());
+        this.isisLinks = Collections.unmodifiableList(topologyEntityDao.getIsIsLinkInfos());
     }
 
     @Override

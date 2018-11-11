@@ -50,8 +50,6 @@ import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.api.BridgeTopologyDao;
 import org.opennms.netmgt.dao.api.CdpElementDao;
-import org.opennms.netmgt.dao.api.CdpLinkDao;
-import org.opennms.netmgt.dao.api.TopologyEntityCache;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.IpNetToMediaDao;
 import org.opennms.netmgt.dao.api.IsIsElementDao;
@@ -62,12 +60,12 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.OspfLinkDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.dao.api.TopologyDao;
+import org.opennms.netmgt.dao.api.TopologyEntityCache;
 import org.opennms.netmgt.model.CdpElement;
 import org.opennms.netmgt.model.CdpLinkInfo;
 import org.opennms.netmgt.model.FilterManager;
 import org.opennms.netmgt.model.IpNetToMedia;
 import org.opennms.netmgt.model.IsIsElement;
-import org.opennms.netmgt.model.IsIsLink;
 import org.opennms.netmgt.model.IsIsLinkInfo;
 import org.opennms.netmgt.model.LldpElement;
 import org.opennms.netmgt.model.LldpLink;
@@ -512,7 +510,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     private void getIsIsLinks() {
 
         List<IsIsElement> elements = m_isisElementDao.findAll();
-        List<IsIsLink> allLinks = m_isisLinkDao.findAll();
+        List<IsIsLinkInfo> allLinks = m_topologyEntityCache.getIsIsLinkInfos();
 
         List<Pair<IsIsLinkInfo, IsIsLinkInfo>> results = matchIsIsLinks(elements, allLinks);
 
