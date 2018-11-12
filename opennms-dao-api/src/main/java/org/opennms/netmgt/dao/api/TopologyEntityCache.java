@@ -32,6 +32,8 @@ import java.util.List;
 
 import org.opennms.netmgt.model.CdpLinkInfo;
 import org.opennms.netmgt.model.IsIsLinkInfo;
+import org.opennms.netmgt.model.LldpLinkInfo;
+import org.opennms.netmgt.model.OspfLinkInfo;
 import org.opennms.netmgt.model.VertexInfo;
 
 public interface TopologyEntityCache {
@@ -41,5 +43,9 @@ public interface TopologyEntityCache {
     List<CdpLinkInfo> getCdpLinkInfos();
 
     List<IsIsLinkInfo> getIsIsLinkInfos();
+
+    List<LldpLinkInfo> getLldpLinkInfos();
+
+    List<OspfLinkInfo> getOspfLinkInfos();
 
 }

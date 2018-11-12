@@ -35,6 +35,8 @@ import org.opennms.netmgt.dao.api.TopologyEntityCache;
 import org.opennms.netmgt.dao.api.TopologyEntityDao;
 import org.opennms.netmgt.model.CdpLinkInfo;
 import org.opennms.netmgt.model.IsIsLinkInfo;
+import org.opennms.netmgt.model.LldpLinkInfo;
+import org.opennms.netmgt.model.OspfLinkInfo;
 import org.opennms.netmgt.model.VertexInfo;
 
 public class TopologyEntityCacheImpl implements TopologyEntityCache {
@@ -42,6 +44,8 @@ public class TopologyEntityCacheImpl implements TopologyEntityCache {
     private List<VertexInfo> vertices;
     private List<CdpLinkInfo> cdpLinks;
     private List<IsIsLinkInfo> isisLinks;
+    private List<LldpLinkInfo> lldpLinks;
+    private List<OspfLinkInfo> ospfLinks;
 
     private TopologyEntityDao topologyEntityDao;
 
@@ -49,6 +53,8 @@ public class TopologyEntityCacheImpl implements TopologyEntityCache {
         this.vertices = Collections.unmodifiableList(topologyEntityDao.getVertexInfos());
         this.cdpLinks = Collections.unmodifiableList(topologyEntityDao.getCdpLinkInfos());
         this.isisLinks = Collections.unmodifiableList(topologyEntityDao.getIsIsLinkInfos());
+        this.lldpLinks = Collections.unmodifiableList(topologyEntityDao.getLldpLinkInfos());
+        this.ospfLinks = Collections.unmodifiableList(topologyEntityDao.getOspfLinkInfos());
     }
 
     @Override
@@ -64,6 +70,16 @@ public class TopologyEntityCacheImpl implements TopologyEntityCache {
     @Override
     public List<IsIsLinkInfo> getIsIsLinkInfos() {
         return isisLinks;
+    }
+
+    @Override
+    public List<LldpLinkInfo> getLldpLinkInfos() {
+        return lldpLinks;
+    }
+
+    @Override
+    public List<OspfLinkInfo> getOspfLinkInfos() {
+        return ospfLinks;
     }
 
     public void setTopologyEntityDao(TopologyEntityDao topologyEntityDao) {
